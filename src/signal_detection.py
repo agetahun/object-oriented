@@ -26,6 +26,7 @@ class SignalDetection:
         return np.clip(adjusted, 1e-6, 1 - 1e-6)
 
 #everything below here is Bayes Factor so change to Signal Detection!
+"""
 def uniform_prior1(p):
     if p >= 0 and p <= 1:
         return 1.0
@@ -51,6 +52,7 @@ print(result)
 bf = BayesFactor(5, 2, uniform_prior1, uniform_prior2)
 result = bf.compute()
 print(result)
+"""
 # everything above here is Bayes Factor so change to Signal Detection!
 
 #Signal Detection test required for assignment (taken from Professor's github)
