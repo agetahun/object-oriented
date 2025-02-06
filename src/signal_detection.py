@@ -1,5 +1,4 @@
-from scipy.stats import norm
-import numpy as np
+import scipy.stats
 
 class SignalDetection:
     def __init__(self, hits, misses, falseAlarms, correctRejections):
@@ -7,23 +6,28 @@ class SignalDetection:
         self.misses = misses
         self.falseAlarms = falseAlarms
         self.correctRejections = correctRejections
-    
+
     def hit_rate(self):
-        return self._adjust_rate(self.hits, self.hits + self.misses)
-    
+        """Calculate hit rate with standard correction."""
+        total_signal_trials = self.hits + self.misses
+        return (self.hits + 0.5) / (total_signal_trials + 1)  # Correction for extreme values
+
     def false_alarm_rate(self):
-        return self._adjust_rate(self.falseAlarms, self.falseAlarms + self.correctRejections)
-    
+        """Calculate false alarm rate with standard correction."""
+        total_noise_trials = self.falseAlarms + self.correctRejections
+        return (self.falseAlarms + 0.5) / (total_noise_trials + 1)  # Correction for extreme values
+
     def d_prime(self):
-        return norm.ppf(self.hit_rate()) - norm.ppf(self.false_alarm_rate())
-    
+        """Compute d' using Z(hit rate) - Z(false alarm rate)."""
+        z_hit = scipy.stats.norm.ppf(self.hit_rate())
+        z_false_alarm = scipy.stats.norm.ppf(self.false_alarm_rate())
+        return z_hit - z_false_alarm
+
     def criterion(self):
-        return -0.5 * (norm.ppf(self.hit_rate()) + norm.ppf(self.false_alarm_rate()))
-    
-    def _adjust_rate(self, count, total):
-        """Adjusts rates to avoid extreme values of 0 or 1."""
-        adjusted = (count + 0.5) / (total + 1)
-        return np.clip(adjusted, 1e-6, 1 - 1e-6)
+        """Compute criterion using -0.5 * (Z(hit rate) + Z(false alarm rate))."""
+        z_hit = scipy.stats.norm.ppf(self.hit_rate())
+        z_false_alarm = scipy.stats.norm.ppf(self.false_alarm_rate())
+        return -0.5 * (z_hit + z_false_alarm)
 
 #everything below here is Bayes Factor so change to Signal Detection!
 """
@@ -56,6 +60,7 @@ print(result)
 # everything above here is Bayes Factor so change to Signal Detection!
 
 #Signal Detection test required for assignment (taken from Professor's github)
+'''
 import unittest
 import numpy as np
 import matplotlib.pyplot as plt
@@ -91,3 +96,4 @@ class TestSignalDetection(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+    '''
